@@ -50,7 +50,7 @@ public class SchoolValidator implements Validator {
             errors.rejectValue("address", "Size.schoolForm.name");
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "Required");
-        if(school.getDescription().length() < 4 || school.getDescription().length() > 32)
-            errors.rejectValue("description", "Size.schoolForm.name");
+        if(school.getDescription().length() < 10 || school.getDescription().length() > 501)
+            errors.rejectValue("description", "Size.schoolForm.description");
     }
 }
