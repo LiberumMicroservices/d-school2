@@ -64,6 +64,7 @@ public class UserController {
     @RequestMapping(value = "/adduser", method = RequestMethod.POST)
     public String adduser(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model){
         userValidator.validate(userForm, bindingResult);
+        model.addAttribute("message", "User added successfully");
 
         if(bindingResult.hasErrors())
             return "adduser";
@@ -88,7 +89,7 @@ public class UserController {
 
     @RequestMapping(value = "/edituser", method = RequestMethod.POST)
     public String edituser(@ModelAttribute("userForm") EditUser userForm, Model model){
-        model.addAttribute("message", "Changes saved");
+        model.addAttribute("message", "Changes saved successfully");
         model.addAttribute("roles", userUtils.allRoles());
 
         userService.save(userUtils.editUserToUser(userForm));

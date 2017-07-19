@@ -40,6 +40,8 @@ public class UserValidator implements Validator {
         if (!user.getConfirmPassword().equals(user.getPassword()))
             errors.rejectValue("confirmPassword", "Diff.userForm.passwordConfirm");
 
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "Required");
+
         if(user.getEmail().length() < 6 || user.getEmail().length() > 32)
             errors.rejectValue("email", "Size.userForm.email");
 

@@ -35,4 +35,10 @@
 
 </div>
 
+<script>
+$(function(){
+    $("#schoolsTable").dataTable();
+})
+</script>
+
 <%@ include file = "footer.jsp"%>

@@ -15,7 +15,9 @@
         <form:form method="POST" modelAttribute="schoolForm" class="form-signin">
             <h2 class="form-signin-heading">New school</h2>
             <spring:bind path="name">
+
                 <div class="form-group ${status.error ? 'has-error' : ''}">
+                    <span>${message}</span>
                     <form:input type="text" path="name" class="form-control" placeholder="School name"
                                 autofocus="true"></form:input>
                     <form:errors path="name"></form:errors>

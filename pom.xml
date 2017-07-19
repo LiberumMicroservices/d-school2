@@ -17,6 +17,7 @@
         <spring.securiry>4.2.3.RELEASE</spring.securiry>
         <hb.manager>5.2.10.Final</hb.manager>
         <mysql.version>5.1.29</mysql.version>
+        <postgresql.version>9.4.1212.jre7</postgresql.version>
         <thymeleaf>3.0.6.RELEASE</thymeleaf>
         <jstl.version>1.2</jstl.version>
         <javax.servlet>3.0.1</javax.servlet>
@@ -85,6 +86,12 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
         </dependency>
 
         <dependency>
