@@ -28,15 +28,17 @@
                 <th>Action</th>
                 <th>Id</th>
                 <th>Name</th>
+                <th>E-mail</th>
                 <th>Roles</th>
             </tr>
         </thead>
         <tbody>
         <c:forEach var="user" items="${users}">
             <tr>
-                <td><a href="${contextPath}/adduser?id=${user.id}">Edit</a> | <a href="#">Delete</a></td>
+                <td><a href="${contextPath}/edituser?id=${user.id}">Edit</a> | <a href="#">Delete</a></td>
                 <td>${user.id}</td>
                 <td>${user.username}</td>
+                <td>${user.email}</td>
                 <td>
                 <c:forEach var="role" items="${user.roles}">
                     ${role.name}<br />

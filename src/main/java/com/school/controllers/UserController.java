@@ -1,8 +1,9 @@
 package com.school.controllers;
 
+import com.school.models.EditUser;
 import com.school.models.User;
-import com.school.services.SecurityService;
 import com.school.services.UserService;
+import com.school.utils.UserUtils;
 import com.school.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
@@ -22,10 +24,34 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private SecurityService securityService;
+    private UserValidator userValidator;
 
     @Autowired
-    private UserValidator userValidator;
+    private UserUtils userUtils;
+
+    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
+    public String welcome(Model model) {
+        return "welcome";
+    }
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String login(Model model, String error, String logout) {
+        if (error != null)
+            model.addAttribute("error", "Your username and password is invalid.");
+
+        if (logout != null)
+            model.addAttribute("message", "You have been logged out successfully.");
+
+        return "login";
+    }
+
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    public String users(Model model) {
+        List<User> users = userService.allUsers();
+        model.addAttribute("users", users);
+
+        return "users";
+    }
 
     @RequestMapping(value = "/adduser", method = RequestMethod.GET)
     public String adduser(Model model){
@@ -33,22 +59,6 @@ public class UserController {
 
         return "adduser";
     }
-
-//    @RequestMapping(value = "/adduser", method = RequestMethod.GET)
-//    public String adduser(HttpServletRequest request, Model model){
-//        try {
-//            Long id = Long.parseLong(request.getParameter("id"));
-//            User user = userService.findById(id);
-//            user.setPassword("");
-//            model.addAttribute("userForm", user);
-//
-//            return "adduser";
-//        }catch (Exception e){
-//            model.addAttribute("userForm", new User());
-//
-//            return "adduser";
-//        }
-//    }
 
     @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/adduser", method = RequestMethod.POST)
@@ -63,27 +73,27 @@ public class UserController {
         return "adduser";
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String login(Model model, String error, String logout) {
-        if (error != null)
-            model.addAttribute("error", "Your username and password is invalid.");
+    @RequestMapping(value = "/edituser", method = RequestMethod.GET)
+    public String edituser(HttpServletRequest request, Model model){
 
-        if (logout != null)
-            model.addAttribute("message", "You have been logged out successfully.");
+        Long id = Long.parseLong(request.getParameter("id"));
+        User user = userService.findById(id);
 
-        return "login";
+        model.addAttribute("userForm", userUtils.userToEditUser(user));
+
+        model.addAttribute("roles", userUtils.allRoles());
+
+        return "edituser";
     }
 
-    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
-    public String welcome(Model model) {
-        return "welcome";
-    }
+    @RequestMapping(value = "/edituser", method = RequestMethod.POST)
+    public String edituser(@ModelAttribute("userForm") EditUser userForm, Model model){
+        model.addAttribute("message", "Changes saved");
+        model.addAttribute("roles", userUtils.allRoles());
 
-    @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public String users(Model model) {
-        List<User> users = userService.allUsers();
-        model.addAttribute("users", users);
+        userService.save(userUtils.editUserToUser(userForm));
 
-        return "users";
+
+        return "edituser";
     }
 }
