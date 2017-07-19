@@ -32,10 +32,6 @@ public class SchoolController {
     @RequestMapping(value = "/addschool", method = RequestMethod.GET)
     public String addschools(Model model){
 
-//        School school = new School();
-//        school.setName("тест");
-//        schoolService.addSchool(school);
-
         model.addAttribute("schoolForm", new School());
 
         return "addschool";
@@ -48,6 +44,7 @@ public class SchoolController {
         if(bindingResult.hasErrors())
             return "addschool";
 
+        model.addAttribute("message", "School " + schoolForm.getName() + " added successfully");
         schoolService.addSchool(schoolForm);
 
         return "addschool";

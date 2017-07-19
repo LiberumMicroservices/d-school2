@@ -12,6 +12,8 @@ public interface SchoolService {
     void unblock(School school);
     School findById(Long id);
     School findByName(String name);
+    School findByPhone(String phone);
+    School findByEmail(String email);
     List<School> findAll();
 
 

@@ -49,6 +49,16 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     @Override
+    public School findByPhone(String phone) {
+        return schoolRepository.findSchoolByPhone(phone);
+    }
+
+    @Override
+    public School findByEmail(String email) {
+        return schoolRepository.findSchoolByEmail(email);
+    }
+
+    @Override
     public List<School> findAll() {
         return schoolRepository.findAll();
     }
