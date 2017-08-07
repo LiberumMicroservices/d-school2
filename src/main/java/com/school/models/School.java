@@ -1,6 +1,7 @@
 package com.school.models;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "schools")
@@ -30,6 +31,9 @@ public class School {
 
     @Column
     boolean blocked;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "school")
+    private Set<SchoolAccount> schoolAccounts;
 
     public Long getId() {
         return id;

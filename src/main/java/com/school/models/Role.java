@@ -17,6 +17,9 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "role")
+    private Set<SchoolAccount> schoolAccounts;
+
     public Long getId() {
         return id;
     }
@@ -39,5 +42,13 @@ public class Role {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public Set<SchoolAccount> getSchoolAccounts() {
+        return schoolAccounts;
+    }
+
+    public void setSchoolAccounts(Set<SchoolAccount> schoolAccounts) {
+        this.schoolAccounts = schoolAccounts;
     }
 }

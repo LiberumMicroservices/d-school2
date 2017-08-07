@@ -14,6 +14,9 @@ public class SchoolValidator implements Validator {
     @Autowired
     private SchoolService schoolService;
 
+    @Autowired
+    private ValidatorUtil validatorUtil;
+
     @Override
     public boolean supports(Class<?> aClass) {
         return School.class.equals(aClass);
@@ -38,12 +41,15 @@ public class SchoolValidator implements Validator {
             errors.rejectValue("email", "Size.schoolForm.name");
         if(schoolService.findByEmail(school.getEmail()) != null)
             errors.rejectValue("email", "Duplicate.userForm.email");
+        if(!validatorUtil.validateEmail(school.getEmail()))
+            errors.rejectValue("email", "BadFormat.userForm.email");
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone", "Required");
-        if(school.getPhone().length() != 13)
-            errors.rejectValue("phone", "Size.schoolForm.phone");
+
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone1", "Required");
+        if(!validatorUtil.validatePhoneUA(school.getPhone()))
+            errors.rejectValue("phone1", "Size.schoolForm.phone");
         if(schoolService.findByPhone(school.getPhone()) != null)
-            errors.rejectValue("phone", "Duplicate.schoolForm.phone");
+            errors.rejectValue("phone1", "Duplicate.schoolForm.phone");
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "address", "Required");
         if(school.getAddress().length() < 4 || school.getAddress().length() > 32)

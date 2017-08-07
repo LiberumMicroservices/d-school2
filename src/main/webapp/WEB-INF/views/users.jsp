@@ -8,8 +8,10 @@
 
 <div class="container-fluid">
 
-    <a href="${contextPath}/adduser" type="button" class="btn btn-default">Add user</a> <br /><br />
+    <a href="${contextPath}/adduser" type="button" class="btn btn-default">Add user</a>
+    <br /><br />
 
+    <span>${message}</span>
     <p>
         Show:
         <select id="table-filter">
@@ -25,17 +27,16 @@
     <table class="table table-striped" id="usersTable">
         <thead>
             <tr>
-                <th>Action</th>
                 <th>Id</th>
                 <th>Name</th>
                 <th>E-mail</th>
-                <th>Roles</th>
+                <th>School - role</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
         <c:forEach var="user" items="${users}">
             <tr>
-                <td><a href="${contextPath}/edituser?id=${user.id}">Edit</a> | <a href="#">Delete</a></td>
                 <td>${user.id}</td>
                 <td>${user.username}</td>
                 <td>${user.email}</td>
@@ -44,11 +45,11 @@
                     ${role.name}<br />
                 </c:forEach>
                 </td>
-
+                <td><a href="${contextPath}/edituser?id=${user.id}">Edit</a> | <a href="${contextPath}/users?id=${user.id}&enabled=${!user.enabled}">${user.enabled ? "Block" : "Unblock"}</a></td>
             </tr>
         </c:forEach>
         </tbody>
-        </table>
+    </table>
 
 </div>
 
