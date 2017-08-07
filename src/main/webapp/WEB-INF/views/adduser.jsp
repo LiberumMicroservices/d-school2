@@ -31,6 +31,14 @@
                 </div>
             </spring:bind>
 
+            <spring:bind path="phone1">
+                <div class="form-group ${status.error ? 'has-error' : ''}">
+                    <form:input type="text" path="phone1" class="form-control" placeholder="Primary phone number"
+                                autofocus="true"></form:input>
+                    <form:errors path="phone1"></form:errors>
+                </div>
+            </spring:bind>
+
             <spring:bind path="password">
                 <div class="form-group ${status.error ? 'has-error' : ''}">
                     <form:input type="password" path="password" class="form-control" placeholder="Password"></form:input>

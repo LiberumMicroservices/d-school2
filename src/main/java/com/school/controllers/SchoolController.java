@@ -4,6 +4,7 @@ import com.school.models.School;
 import com.school.services.SchoolService;
 import com.school.validator.SchoolValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +23,7 @@ public class SchoolController {
     @Autowired
     SchoolService schoolService;
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/schools", method = RequestMethod.GET)
     public String schools(Model model) {
         List<School> schools = schoolService.findAll();
@@ -29,6 +31,7 @@ public class SchoolController {
         return "schools";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/addschool", method = RequestMethod.GET)
     public String addschools(Model model){
 
@@ -37,6 +40,7 @@ public class SchoolController {
         return "addschool";
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/addschool", method = RequestMethod.POST)
     public String addschool(@ModelAttribute("schoolForm") School schoolForm, BindingResult bindingResult, Model model){
         schoolValidator.validate(schoolForm, bindingResult);

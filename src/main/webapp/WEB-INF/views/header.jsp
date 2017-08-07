@@ -1,4 +1,4 @@
-<%@ page  pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" language="java"%>
+<%@ page pageEncoding="UTF-8" contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
@@ -24,34 +24,43 @@
 
 </head>
 <body>
-
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="${contextPath}">D-School</a>
+            <a class="navbar-brand" href="${contextPath}">${currentSchool}</a>
         </div>
         <ul class="nav navbar-nav">
             <li><a href="${contextPath}">Home</a></li>
-            <li><a href="#">Students</a></li>
-            <li><a href="#">Lessons</a></li>
-            <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin
-                    <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                    <li><a href="${contextPath}/users">Users</a></li>
-                    <li><a href="${contextPath}/schools">Schools</a></li>
-                    <li><a href="#">Setting</a></li>
-                </ul>
-            </li>
+            <sec:authorize access="isAuthenticated()">
+                <li><a href="#">Lessons</a></li>
+            </sec:authorize>
+            <sec:authorize access="hasAnyRole('ROLE_ADMIN, ROLE_BOSS, ROLE_MANAGER')">
+                <li><a href="${contextPath}/students">Students</a></li>
+                <li><a href="${contextPath}/teachers">Teachers</a></li>
+            </sec:authorize>
+            <sec:authorize access="hasRole('ROLE_ADMIN') or hasRole('ROLE_BOSS')">
+                <li><a href="${contextPath}/managers">Managers</a></li>
+            </sec:authorize>
+            <sec:authorize access="hasRole('ROLE_ADMIN')">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Admin
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="${contextPath}/users">Users</a></li>
+                        <li><a href="${contextPath}/schools">Schools</a></li>
+                        <li><a href="#">Setting</a></li>
+                    </ul>
+                </li>
+            </sec:authorize>
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <sec:authorize access="!isAuthenticated()">
                 <%--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>--%>
-                <li><a href="<c:url value="/login" />"><span class="glyphicon glyphicon-log-in"></span>Login</a></li>
+                <li><a href="<c:url value="/login" />"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
             </sec:authorize>
             <sec:authorize access="isAuthenticated()">
-                <li> <a href="#"><span class="glyphicon glyphicon-user"></span> <sec:authentication property="principal.username" /></a> </li>
-                <li><a href="<c:url value="/logout" />"><span class="glyphicon glyphicon-log-out"></span>Log out</a></li>
+                <li><a href="${contextPath}/usersetting"><span class="glyphicon glyphicon-user"></span> <sec:authentication property="principal.username" /></a></li>
+                <li><a href="<c:url value="/logout" />"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
             </sec:authorize>
         </ul>
     </div>

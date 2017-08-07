@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.findOne(1L));
         user.setRoles(roles);
+        user.setEnabled(true);
         userRepository.save(user);
     }
 
@@ -52,6 +53,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByPhone1(String phone1) {
+        return userRepository.findUserByPhone1(phone1);
+    }
+
+    @Override
     public User findByEmail(String email) {
         return userRepository.findUserByEmail(email);
     }
@@ -60,6 +66,7 @@ public class UserServiceImpl implements UserService {
     public List<User> allUsers() {
         return userRepository.findAll();
     }
+
 
 
 }

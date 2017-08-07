@@ -14,6 +14,9 @@ public class UserValidator implements Validator {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ValidatorUtil validatorUtil;
+
     @Override
     public boolean supports(Class<?> aClass) {
         return User.class.equals(aClass);
@@ -47,6 +50,17 @@ public class UserValidator implements Validator {
 
         if (userService.findByEmail(user.getEmail()) != null)
             errors.rejectValue("email", "Duplicate.userForm.email");
+
+        if(!validatorUtil.validateEmail(user.getEmail()))
+            errors.rejectValue("email", "BadFormat.userForm.email");
+
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone1", "Required");
+        if(!validatorUtil.validatePhoneUA(user.getPhone1()))
+            errors.rejectValue("phone1", "Size.schoolForm.phone");
+        if(userService.findByPhone1(user.getPhone1()) != null)
+            errors.rejectValue("phone1", "Duplicate.schoolForm.phone");
+
+
 
     }
 }
