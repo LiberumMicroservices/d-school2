@@ -32,7 +32,7 @@
         <ul class="nav navbar-nav">
             <li><a href="${contextPath}">Home</a></li>
             <sec:authorize access="isAuthenticated()">
-                <li><a href="#">Lessons</a></li>
+                <%--<li><a href="${contextPath}/addresponsibleperson">test</a></li>--%>
             </sec:authorize>
             <sec:authorize access="hasAnyRole('ROLE_ADMIN, ROLE_BOSS, ROLE_MANAGER')">
                 <li><a href="${contextPath}/students">Students</a></li>

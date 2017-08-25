@@ -17,7 +17,6 @@
             <div class="panel-body">
 
         <form:form method="POST" modelAttribute="userForm" class="form col-sm-3">
-            <%--<h2 class="form-signin-heading">Edit user</h2>--%>
             <spring:bind path="username">
                 <div class="form-group ${status.error ? 'has-error' : ''}">
                     <span>${message}</span>

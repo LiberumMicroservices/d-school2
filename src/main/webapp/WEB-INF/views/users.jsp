@@ -45,7 +45,7 @@
                     ${role.name}<br />
                 </c:forEach>
                 </td>
-                <td><a href="${contextPath}/edituser?id=${user.id}">Edit</a> | <a href="${contextPath}/users?id=${user.id}&enabled=${!user.enabled}">${user.enabled ? "Block" : "Unblock"}</a></td>
+                <td><a href="${contextPath}/edituser?id=${user.id}">Edit</a> | <a href="${contextPath}/deleteuser?id=${user.id}">Delete</a> | <a href="${contextPath}/users?id=${user.id}&enabled=${!user.enabled}">${user.enabled ? "Block" : "Unblock"}</a></td>
             </tr>
         </c:forEach>
         </tbody>

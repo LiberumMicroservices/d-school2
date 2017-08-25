@@ -7,8 +7,11 @@ import java.util.List;
 public interface UserService {
 
     User findById(Long id);
+    User findCurrentUser();
     void addUser(User user);
     void save(User user);
+    void deleteById(Long id);
+    void changePassword(Long id, String password);
     User findByUsername(String username);
     User findByPhone1(String phone1);
     User findByEmail(String email);

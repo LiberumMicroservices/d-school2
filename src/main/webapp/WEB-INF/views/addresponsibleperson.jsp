@@ -12,29 +12,14 @@
 
     <div class="container">
 
-        <form:form method="POST" modelAttribute="studentForm" class="form-signin">
-            <h3 class="form-signin-heading">New student</h3>
+        <form:form method="POST" modelAttribute="responsibleForm" class="form-signin">
+            <h4 class="form-signin-heading">${student.username}`s responsible person</h4>
             <spring:bind path="username">
                 <div class="form-group ${status.error ? 'has-error' : ''}">
                     <span>${message}</span>
                     <form:input type="text" path="username" class="form-control" placeholder="Username"
                                 autofocus="true"></form:input>
                     <form:errors path="username"></form:errors>
-                </div>
-            </spring:bind>
-
-            <spring:bind path="password">
-                <div class="form-group ${status.error ? 'has-error' : ''}">
-                    <form:input type="password" path="password" class="form-control" placeholder="Password"></form:input>
-                    <form:errors path="password"></form:errors>
-                </div>
-            </spring:bind>
-
-            <spring:bind path="confirmPassword">
-                <div class="form-group ${status.error ? 'has-error' : ''}">
-                    <form:input type="password" path="confirmPassword" class="form-control"
-                                placeholder="Confirm password"></form:input>
-                    <form:errors path="confirmPassword"></form:errors>
                 </div>
             </spring:bind>
 
@@ -51,14 +36,6 @@
                     <form:input type="text" path="phone1" class="form-control" placeholder="Primary phone number"
                                 autofocus="true"></form:input>
                     <form:errors path="phone1"></form:errors>
-                </div>
-            </spring:bind>
-
-            <spring:bind path="phone2">
-                <div class="form-group ${status.error ? 'has-error' : ''}">
-                    <form:input type="text" path="phone2" class="form-control" placeholder="Secondary phone number (optionaly)"
-                                autofocus="true"></form:input>
-                    <form:errors path="phone2"></form:errors>
                 </div>
             </spring:bind>
 
@@ -94,6 +71,7 @@
                 </div>
             </spring:bind>
 
+            <a href="${contextPath}/studentdetails?id=${student.id}" type="button" class="btn btn-lg btn-danger btn-block">Cancel</a>
             <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
         </form:form>
 
