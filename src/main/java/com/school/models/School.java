@@ -35,6 +35,12 @@ public class School {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "school")
     private Set<SchoolAccount> schoolAccounts;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "school")
+    private Set<Room> rooms;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "school")
+    private Set<Course> courses;
+
     public Long getId() {
         return id;
     }
@@ -97,5 +103,29 @@ public class School {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Set<SchoolAccount> getSchoolAccounts() {
+        return schoolAccounts;
+    }
+
+    public void setSchoolAccounts(Set<SchoolAccount> schoolAccounts) {
+        this.schoolAccounts = schoolAccounts;
+    }
+
+    public Set<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(Set<Room> rooms) {
+        this.rooms = rooms;
+    }
+
+    public Set<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(Set<Course> courses) {
+        this.courses = courses;
     }
 }

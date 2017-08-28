@@ -31,6 +31,10 @@ public class Room {
             inverseJoinColumns = @JoinColumn(name = "course_id"))
     private Set<Course> courses;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "school_id", nullable = false)
+    private School school;
+
     public Long getId() {
         return id;
     }
@@ -85,5 +89,13 @@ public class Room {
 
     public void setCourses(Set<Course> courses) {
         this.courses = courses;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
     }
 }

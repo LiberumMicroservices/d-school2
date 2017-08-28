@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:set var="schoolName" value="${sessionScope.currentSchoolName}" />
 
 <!DOCTYPE html >
 <html lang="en">
@@ -27,11 +28,13 @@
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="${contextPath}">${currentSchool}</a>
+            <a class="navbar-brand" href="${contextPath}">${schoolName}</a>
         </div>
         <ul class="nav navbar-nav">
             <li><a href="${contextPath}">Home</a></li>
             <sec:authorize access="isAuthenticated()">
+                <li><a href="${contextPath}/rooms">Rooms</a></li>
+                <li><a href="${contextPath}/courses">Courses</a></li>
                 <%--<li><a href="${contextPath}/addresponsibleperson">test</a></li>--%>
             </sec:authorize>
             <sec:authorize access="hasAnyRole('ROLE_ADMIN, ROLE_BOSS, ROLE_MANAGER')">

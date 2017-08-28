@@ -37,6 +37,10 @@ public class Course {
     @ManyToMany(mappedBy = "courses")
     private Set<Room> rooms;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "school_id", nullable = false)
+    private School school;
+
     public Long getId() {
         return id;
     }
@@ -99,5 +103,13 @@ public class Course {
 
     public void setRooms(Set<Room> rooms) {
         this.rooms = rooms;
+    }
+
+    public School getSchool() {
+        return school;
+    }
+
+    public void setSchool(School school) {
+        this.school = school;
     }
 }

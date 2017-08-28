@@ -3,6 +3,7 @@ package com.school.services.impl;
 import com.school.models.School;
 import com.school.repositories.SchoolRepository;
 import com.school.services.SchoolService;
+import com.school.utils.SchoolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,9 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Autowired
     SchoolRepository schoolRepository;
+
+    @Autowired
+    SchoolUtils schoolUtils;
 
     @Override
     public void addSchool(School school) {
@@ -61,5 +65,10 @@ public class SchoolServiceImpl implements SchoolService {
     @Override
     public List<School> findAll() {
         return schoolRepository.findAll();
+    }
+
+    @Override
+    public School currentSchool() {
+        return findByName(schoolUtils.currentSchoolName());
     }
 }

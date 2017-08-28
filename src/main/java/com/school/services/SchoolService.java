@@ -15,6 +15,7 @@ public interface SchoolService {
     School findByPhone(String phone);
     School findByEmail(String email);
     List<School> findAll();
+    School currentSchool();
 
 
 }

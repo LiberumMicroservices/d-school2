@@ -8,4 +8,5 @@ public interface SchoolUtils {
     List<String> schoolList();
     List<String> freeSchoolsForUserList(User user);
     List<String> schoolsForUserList(User user);
+    String currentSchoolName();
 }

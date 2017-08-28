@@ -71,8 +71,8 @@
                 </div>
             </spring:bind>
 
-            <a href="${contextPath}/studentdetails?id=${student.id}" type="button" class="btn btn-lg btn-danger btn-block">Cancel</a>
             <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+            <a href="${contextPath}/studentdetails?id=${student.id}" type="button" class="btn btn-lg btn-danger btn-block">Cancel</a>
         </form:form>
 
     </div>
