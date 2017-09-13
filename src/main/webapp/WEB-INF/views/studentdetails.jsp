@@ -54,7 +54,34 @@
                                 data-params="{${_csrf.parameterName}:'${_csrf.token}'}">
                 ${user.birthday}</a><br />
 
+            <br />
+            <b>Courses:</b>
+            <table class="table table-hover table-fit">
+                <c:forEach var="course" items="${user.courses}">
+                    <tr>
+                        <td><a href="${contextPath}/courseuser?user=${user.id}&course=${course.name}&action=del">
+                            <span class="glyphicon glyphicon-remove" style="color:red"></span></a></td>
+                        <td><a href="${contextPath}/coursedetails?id=${course.id}">${course.name}</a></td>
+                    </tr>
+                </c:forEach>
+            </table>
+
+            <div class="input-group">
+                <select class="form-control" id="addCourse" style="width:auto;">
+                    <c:forEach var="course" items="${freecourses}">
+                        <option>${course.name}</option>
+                    </c:forEach>
+                </select>
+                    <a href="#" class="btn btn-default" type="button" tabindex="-1" onclick="add()">add</a>
+            </div>
+
             <script>
+
+                function add(){
+                    var course = $('#addCourse').val();
+                    location.href = "${contextPath}/courseuser?user=${user.id}&course=" + course + "&action=add";
+                }
+
                 $(document).ready(function() {
                     //toggle `popup` / `inline` mode
                     $.fn.editable.defaults.mode = 'popup';

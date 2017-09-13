@@ -8,6 +8,7 @@ import com.school.services.ResponsiblePersonService;
 import com.school.services.SchoolAccountService;
 import com.school.services.SchoolService;
 import com.school.services.UserService;
+import com.school.utils.CourseUtil;
 import com.school.utils.SchoolUtils;
 import com.school.utils.UserUtil;
 import com.school.validator.UserValidator;
@@ -50,10 +51,13 @@ public class UserController {
     SchoolService schoolService;
 
     @Autowired
+    CourseUtil courseUtil;
+
+    @Autowired
     ResponsiblePersonService responsiblePersonService;
 
     @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
-    public String welcome(Model model, HttpSession httpSession) {
+    public String welcome(HttpSession httpSession) {
 
         httpSession.setAttribute("currentSchoolName", schoolUtils.currentSchoolName());
 
@@ -332,10 +336,10 @@ public class UserController {
         try {
             Long id = Long.parseLong(request.getParameter("id"));
             user = userService.findById(id);
+            model.addAttribute("freecourses", courseUtil.freeCourses(user));
         }catch (Exception e){
             return "redirect:/error?message=user not found";
         }
-
         model.addAttribute("user", user);
 
         return "studentdetails";

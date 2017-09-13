@@ -31,15 +31,16 @@ public class Course {
     @Column
     private boolean enabled;
 
-    @ManyToMany(mappedBy = "courses")
+    @ManyToMany(mappedBy = "courses", fetch = FetchType.EAGER)
     private Set<User> users;
-
-    @ManyToMany(mappedBy = "courses")
-    private Set<Room> rooms;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "school_id", nullable = false)
     private School school;
+
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "course", fetch = FetchType.EAGER)
+    Set<Schedule> schedules;
 
     public Long getId() {
         return id;
@@ -97,19 +98,19 @@ public class Course {
         this.users = users;
     }
 
-    public Set<Room> getRooms() {
-        return rooms;
-    }
-
-    public void setRooms(Set<Room> rooms) {
-        this.rooms = rooms;
-    }
-
     public School getSchool() {
         return school;
     }
 
     public void setSchool(School school) {
         this.school = school;
+    }
+
+    public Set<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(Set<Schedule> schedules) {
+        this.schedules = schedules;
     }
 }

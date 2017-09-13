@@ -45,11 +45,11 @@ public class SchoolValidator implements Validator {
             errors.rejectValue("email", "BadFormat.email");
 
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone1", "Required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone", "Required");
         if(!validatorUtil.validatePhoneUA(school.getPhone()))
-            errors.rejectValue("phone1", "Size.phone");
+            errors.rejectValue("phone", "Size.phone");
         if(schoolService.findByPhone(school.getPhone()) != null)
-            errors.rejectValue("phone1", "Duplicate.phone");
+            errors.rejectValue("phone", "Duplicate.phone");
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "address", "Required");
         if(school.getAddress().length() < 4 || school.getAddress().length() > 32)

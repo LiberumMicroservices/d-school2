@@ -1,5 +1,6 @@
 package com.school.services.impl;
 
+import com.school.models.Course;
 import com.school.models.Role;
 import com.school.models.User;
 import com.school.repositories.RoleRepository;
@@ -104,6 +105,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(Long id) {
         userRepository.delete(id);
+    }
+
+    @Override
+    public void deleteCourse(User user, Course course) {
+        Set<Course> courses = user.getCourses();
+        for(Course c: courses)
+            if(c.getName().equals(course.getName()))
+                courses.remove(c);
+        user.setCourses(courses);
+        save(user);
+    }
+
+    @Override
+    public void addCourse(User user, Course course) {
+        Set<Course> courses = user.getCourses();
+        courses.add(course);
+        save(user);
     }
 
     @Override

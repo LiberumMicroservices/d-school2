@@ -14,7 +14,7 @@
 
         <div class="form-group ${error != null ? 'has-error' : ''}">
             <span>${message}</span>
-            <input name="username" type="text" class="form-control" placeholder="Username"
+            <input name="username" type="text" class="form-control" placeholder="E-mail"
                    autofocus="true"/>
             <input name="password" type="password" class="form-control" placeholder="Password"/>
             <span>${error}</span>
@@ -27,48 +27,6 @@
     </form>
 
 <div class="container-fluid">
-    <h4 >В системе имеется несколько уровней доступа:</h4>
-    <div style="margin: 15px;">
-        <p class="text-info"><b>Admin</b> - администратор системы</p>
-        <p class="text-warning">login - admin<br />
-            password - admin</p>
-        Полномочия:
-        <ul>
-            <li>+ Добавление школы</li>
-            <li>+ Редактирование школы</li>
-            <li>- Блокировка школы</li>
-            <li>+ Добавление пользователей</li>
-            <li>+ Редактирование пользователей</li>
-            <li>+ Блокировка пользователей (Делает невозможной авторизацию в системе)</li>
-            <li>+ Изменение роли пользователя</li>
-        </ul>
-    </div>
-    <br />
-    <div style="margin: 15px;">
-        <p class="text-info"><b>Boss</b> - Директор школы</p>
-        <p class="text-warning">login - boss<br />
-            password - boss</p>
-        Полномочия:
-        <ul>
-            <li>- Добавление менеджеров и преподавателей</li>
-            <li>- Редактирование менеджеров и преподавателей</li>
-            <li>- Блокировка менеджеров и преподавателей</li>
-            <li>- Удаление менеджеров и преподавателей</li>
-            <li>- Добавление, удаление, редактирование залов</li>
-            <li>- Создание, редактирование и удаление курсов</li>
-        </ul>
-        На данный момент не может ничего.
-    </div>   <br />
-
-    <p class="text-info">
-    <h3 >Роли пользователей:</h3>
-        <b>ROLE_USER - создается по умолчанию<br /></b>
-        <b>ROLE_ADMIN</b> - роли описаны<br />
-        <b>ROLE_BOSS</b> - роли описаны<br />
-        <b>ROLE_MANAGER</b> - в разработке<br />
-        <b>ROLE_TEACHER</b> - в разработке<br />
-        <b>ROLE_STUDENT</b> - в разработке<br />
-    </p>
 
 </div>
 

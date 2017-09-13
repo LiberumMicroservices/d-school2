@@ -46,3 +46,8 @@ body {
 .has-error {
     color: red
 }
+
+.table-fit {
+    white-space: nowrap;
+    width: 1%;
+}

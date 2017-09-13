@@ -26,10 +26,8 @@ public class Room {
     @Column
     private boolean enabled;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "room_course", joinColumns = @JoinColumn(name = "room_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id"))
-    private Set<Course> courses;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "room")
+    Set<Schedule> schedules;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "school_id", nullable = false)
@@ -83,19 +81,19 @@ public class Room {
         this.enabled = enabled;
     }
 
-    public Set<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(Set<Course> courses) {
-        this.courses = courses;
-    }
-
     public School getSchool() {
         return school;
     }
 
     public void setSchool(School school) {
         this.school = school;
+    }
+
+    public Set<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(Set<Schedule> schedule) {
+        this.schedules = schedule;
     }
 }
