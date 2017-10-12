@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:set var="schoolName" value="${sessionScope.currentSchoolName}" />
 
 <!DOCTYPE html >
 <html lang="en">
@@ -19,6 +20,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
 
@@ -27,18 +29,24 @@
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="${contextPath}">${currentSchool}</a>
+            <a class="navbar-brand" href="${contextPath}">${schoolName}</a>
         </div>
         <ul class="nav navbar-nav">
-            <li><a href="${contextPath}">Home</a></li>
             <sec:authorize access="isAuthenticated()">
-                <li><a href="#">Lessons</a></li>
             </sec:authorize>
-            <sec:authorize access="hasAnyRole('ROLE_ADMIN, ROLE_BOSS, ROLE_MANAGER')">
+            <sec:authorize access="hasAnyRole('ROLE_STUDENT')">
+                <li><a href="${contextPath}/ls">Lessons</a></li>
+            </sec:authorize>
+            <sec:authorize access="hasAnyRole('ROLE_BOSS, ROLE_MANAGER, ROLE_TEACHER')">
+                <li><a href="${contextPath}/lessons">Lessons</a></li>
+                <li><a href="${contextPath}/rooms">Rooms</a></li>
+                <li><a href="${contextPath}/courses">Courses</a></li>
                 <li><a href="${contextPath}/students">Students</a></li>
+            </sec:authorize>
+            <sec:authorize access="hasAnyRole('ROLE_BOSS, ROLE_MANAGER')">
                 <li><a href="${contextPath}/teachers">Teachers</a></li>
             </sec:authorize>
-            <sec:authorize access="hasRole('ROLE_ADMIN') or hasRole('ROLE_BOSS')">
+            <sec:authorize access="hasRole('ROLE_BOSS')">
                 <li><a href="${contextPath}/managers">Managers</a></li>
             </sec:authorize>
             <sec:authorize access="hasRole('ROLE_ADMIN')">

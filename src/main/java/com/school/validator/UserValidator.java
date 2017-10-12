@@ -56,9 +56,9 @@ public class UserValidator implements Validator {
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone1", "Required");
         if(!validatorUtil.validatePhoneUA(user.getPhone1()))
-            errors.rejectValue("phone1", "Size.schoolForm.phone");
+            errors.rejectValue("phone1", "Size.phone");
         if(userService.findByPhone1(user.getPhone1()) != null)
-            errors.rejectValue("phone1", "Duplicate.schoolForm.phone");
+            errors.rejectValue("phone1", "Duplicate.phone");
 
 
 

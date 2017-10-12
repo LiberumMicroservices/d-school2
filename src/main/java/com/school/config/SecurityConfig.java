@@ -12,9 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -40,14 +38,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
         http
                 .authorizeRequests()
-                    .antMatchers("/welcome").permitAll()
+                    .antMatchers("/schedules").permitAll() // для тестов
+//                    .antMatchers("/rooms").access("hasRole('ROLE_ADMIN')")
                     .antMatchers("/schools").access("hasRole('ROLE_ADMIN')")
                     .antMatchers("/addschool").access("hasRole('ROLE_ADMIN')")
                     .antMatchers("/users").access("hasRole('ROLE_ADMIN')")
                     .antMatchers("/adduser").access("hasRole('ROLE_ADMIN')")
                     .antMatchers("/edituser").access("hasRole('ROLE_ADMIN')")
 //                    .antMatchers("/users").access("hasRole('ROLE_BOSS') or hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
-                    .antMatchers("/resources/**", "**/favicon.ico", "/welcome", "/").permitAll()
+                    .antMatchers("/resources/**", "**/favicon.ico", "/welcome", "/", "/error").permitAll()
                     .anyRequest().authenticated()
                     .and()
                 .formLogin()
@@ -55,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                     .failureUrl("/login?error")
                     .permitAll()
                 .and()
-                .exceptionHandling().accessDeniedPage("/login");
+                .exceptionHandling().accessDeniedPage("/error?message=Access denied");
 
 
         http.logout()

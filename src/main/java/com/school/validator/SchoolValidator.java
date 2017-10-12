@@ -30,30 +30,30 @@ public class SchoolValidator implements Validator {
         if(school.getName().length() < 4 || school.getName().length() > 32)
             errors.rejectValue("name", "Size.schoolForm.name");
         if(schoolService.findByName(school.getName()) != null)
-            errors.rejectValue("name", "Duplicate.userForm.username");
+            errors.rejectValue("name", "Duplicate.name");
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "nameBrand", "Required");
         if(school.getNameBrand().length() < 4 || school.getNameBrand().length() > 32)
             errors.rejectValue("nameBrand", "Size.schoolForm.name");
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "Required");
-        if(school.getEmail().length() < 4 || school.getEmail().length() > 32)
-            errors.rejectValue("email", "Size.schoolForm.name");
+        if(school.getEmail().length() < 6 || school.getEmail().length() > 32)
+            errors.rejectValue("email", "Size.email");
         if(schoolService.findByEmail(school.getEmail()) != null)
-            errors.rejectValue("email", "Duplicate.userForm.email");
+            errors.rejectValue("email", "Duplicate.email");
         if(!validatorUtil.validateEmail(school.getEmail()))
-            errors.rejectValue("email", "BadFormat.userForm.email");
+            errors.rejectValue("email", "BadFormat.email");
 
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone1", "Required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone", "Required");
         if(!validatorUtil.validatePhoneUA(school.getPhone()))
-            errors.rejectValue("phone1", "Size.schoolForm.phone");
+            errors.rejectValue("phone", "Size.phone");
         if(schoolService.findByPhone(school.getPhone()) != null)
-            errors.rejectValue("phone1", "Duplicate.schoolForm.phone");
+            errors.rejectValue("phone", "Duplicate.phone");
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "address", "Required");
         if(school.getAddress().length() < 4 || school.getAddress().length() > 32)
-            errors.rejectValue("address", "Size.schoolForm.name");
+            errors.rejectValue("address", "Size.address");
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "Required");
         if(school.getDescription().length() < 10 || school.getDescription().length() > 501)

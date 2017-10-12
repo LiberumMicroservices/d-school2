@@ -23,7 +23,7 @@
             <tr>
                 <td>${user.username}</td>
                 <td>${user.email}</td>
-                <td><a href="#">Edit</a> | <a href="#">${user.enabled ? "Block" : "Unblock"}</a></td>
+                <td><a href="${contextPath}/userdetails?id=${user.id}">Details</a> | <a href="${contextPath}/userdetails?id=${user.id}#edit">Edit</a> | <a href="#">${user.enabled ? "Block" : "Unblock"}</a></td>
             </tr>
         </c:forEach>
         </tbody>

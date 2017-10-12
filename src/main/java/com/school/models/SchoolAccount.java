@@ -1,5 +1,7 @@
 package com.school.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -11,9 +13,8 @@ public class SchoolAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //TODO courses
-
     @Column(name = "date_of_enrolment")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfEnrolment;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
@@ -78,4 +79,6 @@ public class SchoolAccount {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+
 }

@@ -8,7 +8,7 @@
 
 <div class="container-fluid">
 
-    <img src="${contextPath}/resources/img/female.png">
+    <%--<img src="${contextPath}/resources/img/female.png">--%>
 
 </div>
 

@@ -1,24 +1,29 @@
 package com.school.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.school.models.*;
+import com.school.repositories.RoleRepository;
+import com.school.services.ResponsiblePersonService;
 import com.school.services.SchoolAccountService;
 import com.school.services.SchoolService;
 import com.school.services.UserService;
+import com.school.utils.CourseUtil;
 import com.school.utils.SchoolUtils;
 import com.school.utils.UserUtil;
 import com.school.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -40,19 +45,27 @@ public class UserController {
     private SchoolAccountService schoolAccountService;
 
     @Autowired
+    RoleRepository roleRepository;
+
+    @Autowired
     SchoolService schoolService;
 
-    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
-    public String welcome(Model model) {
+    @Autowired
+    CourseUtil courseUtil;
 
-        model.addAttribute("currentSchool", currentSchoolName());
+    @Autowired
+    ResponsiblePersonService responsiblePersonService;
+
+    @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
+    public String welcome(HttpSession httpSession) {
+
+        httpSession.setAttribute("currentSchoolName", schoolUtils.currentSchoolName());
 
         return "welcome";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String login(Model model, String error, String logout) {
-        model.addAttribute("currentSchool", currentSchoolName());
+    public String login(Model model, String error, String logout, HttpSession httpSession) {
 
         if (error != null)
             model.addAttribute("error", "Your username and password is invalid.");
@@ -60,13 +73,14 @@ public class UserController {
         if (logout != null)
             model.addAttribute("message", "You have been logged out successfully.");
 
+        httpSession.setAttribute("currentSchoolName", schoolUtils.currentSchoolName());
+
         return "login";
     }
 
-    @Secured("ROLE_ADMIN")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     public String users(HttpServletRequest request, Model model) {
-        model.addAttribute("currentSchool", currentSchoolName());
 
         try {
             Long id = Long.parseLong(request.getParameter("id"));
@@ -79,7 +93,7 @@ public class UserController {
             model.addAttribute("message", "User " + user.getUsername() + " " + res);
 
         }catch (Exception e){
-
+            System.out.println("UserController.users: " + e);
         }
 
         List<User> users = userService.allUsers();
@@ -88,20 +102,40 @@ public class UserController {
         return "users";
     }
 
-    @Secured("ROLE_ADMIN")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RequestMapping(value = "/deleteuser", method = RequestMethod.GET)
+    public String deleteuser(HttpServletRequest request) {
+
+        Role roleUser = roleRepository.findRoleByName("ROLE_USER");
+        if(userService.findCurrentUser().getRoles().contains(roleUser)) {
+            return "redirect:/login";
+        }
+        else {
+            try {
+                Long id = Long.parseLong(request.getParameter("id"));
+                userService.deleteById(id);
+                return "redirect:/users";
+            } catch (Exception e) {
+                System.out.println("UserController.deleteuser: " + e);
+            }
+        }
+
+        return "redirect:/users";
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/adduser", method = RequestMethod.GET)
     public String adduser(Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
+        model.addAttribute("currentSchool", schoolUtils.currentSchoolName());
 
         model.addAttribute("userForm", new User());
 
         return "adduser";
     }
 
-    @Secured("ROLE_ADMIN")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/adduser", method = RequestMethod.POST)
     public String adduser(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
         model.addAttribute("roles", userUtil.allRoles());
 
         userValidator.validate(userForm, bindingResult);
@@ -116,12 +150,11 @@ public class UserController {
         return "adduser";
     }
 
-    @Secured("ROLE_ADMIN")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/edituser", method = RequestMethod.GET)
     public String edituser(HttpServletRequest request, Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
 
-        // Edit main user info
+        // --- EDIT MAIN USER INFO ---
         Long id = Long.parseLong(request.getParameter("id"));
         User user = userService.findById(id);
         model.addAttribute("userForm", userUtil.userToEditUser(user));
@@ -148,31 +181,61 @@ public class UserController {
         model.addAttribute("schoolName", schoolName);
         model.addAttribute("roleName", roleName);
 
-//        id=2&action=addSchool&school=salsa&role=ROLE_STUDENT
-
         return "edituser";
     }
 
-    @Secured("ROLE_ADMIN")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/edituser", method = RequestMethod.POST)
     public String edituser(@ModelAttribute("userForm") EditUser userForm, Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
 
         model.addAttribute("message", "Changes saved successfully");
         model.addAttribute("rolesadm", userUtil.rolesForAdmin());
         userService.save(userUtil.editUserToUser(userForm));
 
-//        model.addAttribute("roles", userUtil.rolesForSchool());
-
         return "edituser";
     }
 
-    @Secured({"ROLE_ADMIN, ROLE USER"})
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RequestMapping(value = "/userdetails", method = RequestMethod.GET)
+    public String userdetails(HttpServletRequest request, Model model){
+
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            // Use access check
+            User user = userUtil.getCheckedUser(id);
+            model.addAttribute("userForm", user);
+            model.addAttribute("user", user);
+        }catch (Exception e){
+            model.addAttribute("message", "User not found");
+        }
+        return "userdetails";
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RequestMapping(value = "/userdetails", method = RequestMethod.POST)
+    public String userdetails(@ModelAttribute("userForm") User userForm, HttpServletRequest request, Model model){
+
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            User user = userService.findById(id);
+
+            // Use access check
+            userUtil.saveCheckedUser(userForm);
+            model.addAttribute("message", "Changes saved successfully");
+
+            return "redirect:/userdetails?id=" + user.getId();
+        }catch (Exception e){
+            model.addAttribute("message", "Changes saved error");
+        }
+
+        return "userdetails";
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @RequestMapping(value = "/usersetting", method = RequestMethod.POST)
     public String usersetting(@ModelAttribute("userSetting") UserSetting userSetting, Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
 
-        User user = currentUser();
+        User user = userService.findCurrentUser();
         model.addAttribute("user", user);
         model.addAttribute("userSetting", userUtil.userToUserSetting(user));
         model.addAttribute("schoolList", userUtil.schoolsForUser(user));
@@ -188,12 +251,11 @@ public class UserController {
         return "usersetting";
     }
 
-    @Secured({"ROLE_ADMIN, ROLE_USER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @RequestMapping(value = "/usersetting", method = RequestMethod.GET)
     public String usersetting(Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
 
-        User user = currentUser();
+        User user = userService.findCurrentUser();
         model.addAttribute("user", user);
         model.addAttribute("userSetting", userUtil.userToUserSetting(user));
         model.addAttribute("schoolList", userUtil.schoolsForUser(user));
@@ -201,78 +263,157 @@ public class UserController {
         return "usersetting";
     }
 
-    // --- STUDENTS ---
+    //   --- RESPONSIBLE PERSON ---
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER', 'ROLE_TEACHER')")
+    @RequestMapping(value = "/addresponsibleperson", method = RequestMethod.GET)
+    public String addresponsibleperson(Model model, HttpServletRequest request){
+        model.addAttribute("responsibleForm", new ResponsiblePerson());
 
-    @Secured({"ROLE_ADMIN, ROLE_BOSS, ROLE_MANAGER, ROLE_TEACHER"})
+        User student;
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            student = userService.findById(id);
+        }catch (Exception e){
+            return "redirect:/error?message=user not found";
+        }
+
+        model.addAttribute("student", student);
+
+        return "addresponsibleperson";
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER', 'ROLE_TEACHER')")
+    @RequestMapping(value = "/addresponsibleperson", method = RequestMethod.POST)
+    public String addresponsibleperson(@ModelAttribute("responsibleForm") ResponsiblePerson responsiblePerson, HttpServletRequest request){
+        User student;
+
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            student = userService.findById(id);
+            responsiblePerson.setUser(student);
+            responsiblePersonService.save(responsiblePerson);
+        }catch (Exception e){
+            return "redirect:/error?message=user not found";
+        }
+
+        return "redirect:/studentdetails?id=" + student.getId();
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER', 'ROLE_TEACHER')")
+    @RequestMapping(value = "/editresponsiblevalue", method = RequestMethod.POST)
+    public @ResponseBody String editresponsiblevalue(@RequestParam() String value, @RequestParam() Long pk, @RequestParam() String name) throws JsonProcessingException {
+        String message = userUtil.editResponsiblePersonOneValue(name, value, pk);
+        ObjectMapper mapper = new ObjectMapper();
+        ResponseMsg responseMsg = new ResponseMsg();
+
+        if(message.equals("ok")) {
+            responseMsg.setSuccess(true);
+        } else {
+            responseMsg.setSuccess(false);
+            responseMsg.setMsg(message);
+        }
+
+        return mapper.writeValueAsString(responseMsg);
+    }
+
+
+    // --- STUDENTS ---
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER', 'ROLE_TEACHER')")
     @RequestMapping(value = "/students", method = RequestMethod.GET)
     public String students(Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
 
-        School school = schoolService.findByName(currentSchoolName());
+        School school = schoolService.findByName(schoolUtils.currentSchoolName());
         model.addAttribute("students", userUtil.allUsersFromSchoolWithRole(school, "ROLE_STUDENT"));
 
         return "students";
     }
 
-    @Secured({"ROLE_ADMIN, ROLE_BOSS, ROLE_MANAGER, ROLE_TEACHER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER', 'ROLE_TEACHER')")
+    @RequestMapping(value = "/studentdetails", method = RequestMethod.GET)
+    public String studentdetails(ModelMap model, HttpServletRequest request){
+
+        User user;
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            user = userService.findById(id);
+            model.addAttribute("freecourses", courseUtil.freeCourses(user));
+        }catch (Exception e){
+            return "redirect:/error?message=user not found";
+        }
+        model.addAttribute("user", user);
+
+        return "studentdetails";
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER', 'ROLE_TEACHER')")
+    @RequestMapping(value = "/editstudentvalue", method = RequestMethod.POST)
+    public @ResponseBody String editstudentvalue(@RequestParam() String value, @RequestParam() Long pk, @RequestParam() String name) throws JsonProcessingException {
+
+        String message = userUtil.editUserOneValue(name, value, pk);
+        ObjectMapper mapper = new ObjectMapper();
+        ResponseMsg responseMsg = new ResponseMsg();
+
+        if(message.equals("ok")) {
+            responseMsg.setSuccess(true);
+        } else {
+            responseMsg.setSuccess(false);
+            responseMsg.setMsg(message);
+        }
+
+        return mapper.writeValueAsString(responseMsg);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER', 'ROLE_TEACHER')")
     @RequestMapping(value = "/addstudent", method = RequestMethod.GET)
     public String addStudent(Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
-        model.addAttribute("userForm", new User());
+        model.addAttribute("studentForm", new User());
 
         return "addstudent";
     }
 
-    @Secured({"ROLE_ADMIN, ROLE_BOSS, ROLE_MANAGER, ROLE_TEACHER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER', 'ROLE_TEACHER')")
     @RequestMapping(value = "/addstudent", method = RequestMethod.POST)
-    public String addStudent(@ModelAttribute("userForm") User userForm, Model model, BindingResult bindingResult){
-        model.addAttribute("currentSchool", currentSchoolName());
+    public String addStudent(@ModelAttribute("studentForm") User userForm, BindingResult bindingResult){
 
         userValidator.validate(userForm, bindingResult);
-
         if(bindingResult.hasErrors())
             return "addstudent";
 
-        userUtil.createStudent(userForm, currentSchoolName());
+        // save student
+        userUtil.createStudent(userForm, schoolUtils.currentSchoolName());
 
-        model.addAttribute("message", "Student " + userForm.getUsername() + " added successfully");
-
-        return "addstudent";
+        return "redirect:/addresponsibleperson?id="+userService.findByEmail(userForm.getEmail());
     }
 
     // --- TEACHERS ---
-
-    @Secured({"ROLE_ADMIN, ROLE_BOSS, ROLE_MANAGER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER')")
     @RequestMapping(value = "/teachers", method = RequestMethod.GET)
     public String teachers(Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
 
-        School school = schoolService.findByName(currentSchoolName());
+        School school = schoolService.findByName(schoolUtils.currentSchoolName());
         model.addAttribute("teachers", userUtil.allUsersFromSchoolWithRole(school, "ROLE_TEACHER"));
 
         return "teachers";
     }
 
-    @Secured({"ROLE_ADMIN, ROLE_BOSS, ROLE_MANAGER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER')")
     @RequestMapping(value = "/addteacher", method = RequestMethod.GET)
     public String addTeacher(Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
         model.addAttribute("userForm", new User());
 
         return "addteacher";
     }
 
-    @Secured({"ROLE_ADMIN, ROLE_BOSS, ROLE_MANAGER"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS', 'ROLE_MANAGER')")
     @RequestMapping(value = "/addteacher", method = RequestMethod.POST)
     public String addTeacher(@ModelAttribute("userForm") User userForm, Model model, BindingResult bindingResult){
-        model.addAttribute("currentSchool", currentSchoolName());
 
         userValidator.validate(userForm, bindingResult);
 
         if(bindingResult.hasErrors())
             return "addteacher";
 
-        userUtil.createTeacher(userForm, currentSchoolName());
+        userUtil.createTeacher(userForm, schoolUtils.currentSchoolName());
 
         model.addAttribute("message", "Teacher " + userForm.getUsername() + " added successfully");
 
@@ -280,72 +421,82 @@ public class UserController {
     }
 
     // --- MANAGERS ---
-
-    @Secured({"ROLE_ADMIN, ROLE_BOSS"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS')")
     @RequestMapping(value = "/managers", method = RequestMethod.GET)
     public String managers(Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
 
-        School school = schoolService.findByName(currentSchoolName());
+        School school = schoolService.findByName(schoolUtils.currentSchoolName());
         model.addAttribute("managers", userUtil.allUsersFromSchoolWithRole(school, "ROLE_MANAGER"));
 
         return "managers";
     }
 
-    @Secured({"ROLE_ADMIN, ROLE_BOSS"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS')")
     @RequestMapping(value = "/addmanager", method = RequestMethod.GET)
     public String addmanager(Model model){
-        model.addAttribute("currentSchool", currentSchoolName());
         model.addAttribute("userForm", new User());
 
         return "addmanager";
     }
 
-    @Secured({"ROLE_ADMIN, ROLE_BOSS"})
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BOSS')")
     @RequestMapping(value = "/addmanager", method = RequestMethod.POST)
     public String addmanager(@ModelAttribute("userForm") User userForm, Model model, BindingResult bindingResult){
-        model.addAttribute("currentSchool", currentSchoolName());
 
         userValidator.validate(userForm, bindingResult);
 
         if(bindingResult.hasErrors())
             return "addmanager";
 
-        userUtil.createManager(userForm, currentSchoolName());
+        userUtil.createManager(userForm, schoolUtils.currentSchoolName());
 
         model.addAttribute("message", "Manager " + userForm.getUsername() + " added successfully");
 
         return "addmanager";
     }
 
-    private User currentUser(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String name = auth.getName();
-        User res;
-        try {
-            res = userService.findByUsername(name);
-        } catch (Exception e){
-            res = new User();
-        }
+    @RequestMapping(value = "/error", method = RequestMethod.GET)
+    public String error(Model model, HttpServletRequest request){
+        String message = request.getParameter("message");
+        model.addAttribute("message", message);
 
-        return res;
+        return "error";
     }
 
-    private String currentSchoolName(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String name = auth.getName();
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public String test(Model model){
 
-        String schoolName;
-        if(!name.equals("anonymousUser")) {
-            schoolName = userService.findByUsername(name).getCurrentSchoolName();
-            if(schoolName == null)
-                schoolName = "D-School";
-        }
-        else {
-            schoolName = "D-School";
-        }
+        List<ResponsiblePerson> responsiblePersons = new ArrayList<>();
+        ResponsiblePerson r1 = new ResponsiblePerson();
+        ResponsiblePerson r2 = new ResponsiblePerson();
+        User user = userService.findCurrentUser();
+        r1.setUser(user);
+        r2.setUser(user);
+        r1.setUsername("name1");
+        r2.setUsername("name2");
+        r1.setEmail("mail1");
+        r2.setEmail("mail2");
+        r1.setSkype("skype1");
+        r2.setSkype("skype2");
+        r1.setPhone1("+380679547354");
+        r2.setPhone1("+380976582165");
+        r1.setAddress("address1");
+        r2.setAddress("address2");
+        r1.setDescription("description1");
+        r2.setDescription("description2");
+        responsiblePersons.add(r1);
+        responsiblePersons.add(r2);
 
-        return schoolName;
+        AddStudentForm asf = new AddStudentForm();
+        asf.setUser(user);
+        asf.setResponsiblePersons(responsiblePersons);
+
+        model.addAttribute("userForm", asf);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("addStudentForm", asf);
+
+        return "test";
     }
 
 //    @RequestMapping(value = "/schoolAccounts.json", method = RequestMethod.GET)
@@ -359,15 +510,4 @@ public class UserController {
 //        return res;
 //    }
 
-    //TODO
-//
-//    public String addteacher(){
-//
-//        return "addmanager";
-//    }
-//
-//    public String addstudent(){
-//
-//        return "addmanager";
-//    }
 }

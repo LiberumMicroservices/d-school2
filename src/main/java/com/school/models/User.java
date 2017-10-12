@@ -59,6 +59,14 @@ public class User {
                 inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<ResponsiblePerson> responsiblePersons;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_course", joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id"))
+    private Set<Course> courses;
+
     public Long getId() {
         return id;
     }
@@ -177,5 +185,21 @@ public class User {
 
     public void setSkype(String skype) {
         this.skype = skype;
+    }
+
+    public Set<ResponsiblePerson> getResponsiblePersons() {
+        return responsiblePersons;
+    }
+
+    public void setResponsiblePersons(Set<ResponsiblePerson> responsiblePersons) {
+        this.responsiblePersons = responsiblePersons;
+    }
+
+    public Set<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(Set<Course> courses) {
+        this.courses = courses;
     }
 }

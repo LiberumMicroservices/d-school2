@@ -12,8 +12,8 @@
 
     <div class="container">
 
-        <form:form method="POST" modelAttribute="userForm" class="form-signin">
-            <h2 class="form-signin-heading">New student</h2>
+        <form:form method="POST" modelAttribute="studentForm" class="form-signin">
+            <h3 class="form-signin-heading">New student</h3>
             <spring:bind path="username">
                 <div class="form-group ${status.error ? 'has-error' : ''}">
                     <span>${message}</span>
@@ -88,6 +88,7 @@
 
             <spring:bind path="birthday">
                 <div class="form-group ${status.error ? 'has-error' : ''}">
+                    <label for="birthday">Birthday</label>
                     <form:input type="date" path="birthday" class="form-control" autofocus="true"></form:input>
                     <form:errors path="birthday"></form:errors>
                 </div>

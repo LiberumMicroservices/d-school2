@@ -5,8 +5,11 @@ import com.school.models.SchoolAccount;
 import com.school.models.User;
 import com.school.services.SchoolAccountService;
 import com.school.services.SchoolService;
+import com.school.services.UserService;
 import com.school.utils.SchoolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,6 +24,9 @@ public class SchoolUtilImpl implements SchoolUtils {
 
     @Autowired
     private SchoolAccountService schoolAccountService;
+
+    @Autowired
+    UserService userService;
 
     @Override
     public List<String> schoolList() {
@@ -48,5 +54,23 @@ public class SchoolUtilImpl implements SchoolUtils {
         res.addAll(schoolAccountsFromUser.stream().map(account -> account.getSchool().getName()).collect(Collectors.toList()));
 
         return res;
+    }
+
+    @Override
+    public String currentSchoolName() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+
+        String schoolName;
+        if(!name.equals("anonymousUser")) {
+            schoolName = userService.findByUsername(name).getCurrentSchoolName();
+            if(schoolName == null)
+                schoolName = "D-School";
+        }
+        else {
+            schoolName = "D-School";
+        }
+
+        return schoolName;
     }
 }
